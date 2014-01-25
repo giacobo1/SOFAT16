@@ -45,6 +45,8 @@ class FAT16Analyzer
 	vector<Fat16Entry> fat1;
 	vector<Fat16Entry> fat2;
 
+	void loadEntries();
+
 public:
 
 	FAT16Analyzer(FILE *fs);

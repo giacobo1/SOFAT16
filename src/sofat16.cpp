@@ -1,11 +1,9 @@
 #include "sofat16.h"
 
-FAT16Analyzer::FAT16Analyzer(FILE *fs)
+FAT16Analyzer::FAT16Analyzer(char *fname)
 {
-	this->fs = fs;
-
-	fopen(fs, "rb");
-
+	this->fs = fopen(fname, "rb");
+	
 	if (fs == NULL)
 	{
 		printf("Erro ao abrir o arquivo com o sistema de arquivo.\n\n");

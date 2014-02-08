@@ -39,17 +39,48 @@ enum EntryFlag
 	directory = 0x2E
 };
 
+typedef struct
+{
+    unsigned char jmp[3];
+    unsigned char oem[8];
+    unsigned short sector_size;
+    unsigned char sectors_per_cluster;
+    unsigned short reserved_sectors;
+    unsigned char number_of_fats;
+    unsigned short root_dir_entries;
+    unsigned short total_sectors_short; // if zero, later field is used
+    unsigned char media_descriptor;
+    unsigned short fat_size_sectors;
+    unsigned short sectors_per_track;
+    unsigned short number_of_heads;
+    unsigned long hidden_sectors;
+    unsigned long total_sectors_long;
+    
+    unsigned char drive_number;
+    unsigned char current_head;
+    unsigned char boot_signature;
+    unsigned long volume_id;
+    char volume_label[11];
+    char fs_type[8];
+    char boot_code[448];
+    unsigned short boot_sector_signature;
+} Fat16BootSector;
+
 class FAT16Analyzer
 {
 	FILE *fs;
 
-	vector<Fat16Entry> fat1;
-	vector<Fat16Entry> fat2;
+	unsigned short *fat1;
+	unsigned short *fat2;
 
-	void loadEntries();
+	vector<Fat16Entry> entries;
+
+	int loadEntries();
+	int loadFats(int fat1Start, int fat2Start);
 
 public:
 
+	FAT16Analyzer();
 	FAT16Analyzer(char *fname);
 	~FAT16Analyzer();
 

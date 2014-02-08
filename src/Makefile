@@ -10,6 +10,9 @@ sofat16.o: sofat16.h sofat16.cpp
 clear_obj:
 	rm *o
 
+clear_exe:
+	rm testeme
+
 build_filesystem:
 	dd if=/dev/zero of=disco bs=1M count=2
 
@@ -17,4 +20,4 @@ format_filesystem:
 	mkfs.vfat -F16 disco
 
 mount_filesystem:
-	mount -o loop,uid=1000,gid=1000 disco ../src
+	sudo mount -o disco mp

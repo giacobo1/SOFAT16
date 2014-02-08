@@ -1,5 +1,3 @@
-// TODO: Implementar a função de carregar as fats
-// TODO: Arrumar o makefile para poder testar/implementar
 
 #ifndef SOFAT16_H
 #define SOFAT16_H

@@ -1,5 +1,5 @@
 testeme: main.o sofat16.o
-	g++ -Wall -O0 main.o sofat16.o -o testeme
+	g++ -Wall -O3 main.o sofat16.o -o testeme
 
 main.o: sofat16.h main.cpp
 	g++ -c main.cpp
@@ -14,10 +14,13 @@ clear_exe:
 	rm testeme
 
 build_filesystem:
-	dd if=/dev/zero of=disco bs=1M count=2
+	dd if=/dev/zero of=disco bs=512 count=65536
 
 format_filesystem:
-	mkfs.vfat -F16 disco
+	mkfs.msdos -F 16 disco
 
 mount_filesystem:
-	sudo mount -o disco mp
+	sudo mount disco mp_sofat16
+
+umount_filesystem:
+	sudo umount mp_sofat16

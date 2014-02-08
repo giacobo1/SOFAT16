@@ -9,7 +9,7 @@ FAT16Analyzer::FAT16Analyzer()
 FAT16Analyzer::FAT16Analyzer(char *fname)
 {
 	this->fs = fopen(fname, "rb");
-	
+
 	if (fs == NULL)
 	{
 		printf("Erro ao abrir o arquivo com o sistema de arquivo.\n\n");
@@ -30,37 +30,12 @@ FAT16Analyzer::~FAT16Analyzer()
 int FAT16Analyzer::loadEntries()
 {
 	int i, bsStart, fat1Start, fat2Start;
-    PartitionTable pt[4];
 	Fat16BootSector bs;
-    Fat16Entry entry;
+	Fat16Entry entry;
 
-	if (fs == NULL)
-	{
-		printf("Disc not found!\n");
-        return -1;
-	}
-    
-    fseek(fs, 0x1BE, SEEK_SET);
-    fread(pt, sizeof(PartitionTable), 4, fs);
-    
-    for (i = 0; i < 4; i++)
-	{        
-        if(pt[i].partition_type == 4 || pt[i].partition_type == 6 || pt[i].partition_type == 14)
-		{
-            break;
-        }
-    }
-    
-    if (i == 4)
-	{
-        printf("No FAT16 filesystem found, exiting...\n");
-        return -1;
-    }
-
-	bsStart = 512 * pt[i].start_sector;
+	bsStart = 0;
 
 	fseek(fs, bsStart, SEEK_SET);
-    //fread(&bs, sizeof(Fat16BootSector), 1, fs);
 
 	fread(&bs.jmp, sizeof(unsigned char), 3, fs);
 	fread(&bs.oem, sizeof(unsigned char), 8, fs);
@@ -91,11 +66,11 @@ int FAT16Analyzer::loadEntries()
 
 	for (i = 0; i < bs.root_dir_entries; i++)
 	{
-        fread(&entry, sizeof(entry), 1, fs);
+		fread(&entry, sizeof(entry), 1, fs);
 		entries.push_back(entry);
-    }
+	}
 
-	fat1Start = bsStart + 1024;
+	fat1Start = bsStart + 0x800;
 	fat2Start = fat1Start + bs.fat_size_sectors * bs.sector_size;
 
 	loadFats(fat1Start, fat2Start);
@@ -108,7 +83,7 @@ int FAT16Analyzer::loadFats(int fat1Start, int fat2Start)
 	if (fs == NULL)
 	{
 		printf("Disc not found!\n");
-        return -1;
+		return -1;
 	}
 
 	if (fat1 == NULL) fat1 = new unsigned short[65536];

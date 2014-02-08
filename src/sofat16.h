@@ -34,9 +34,9 @@ typedef struct
 
 enum EntryFlag
 {
-	unused = 0x00,
-	deleted = 0xE5,
-	directory = 0x2E
+    unused = 0x00,
+    deleted = 0xE5,
+    directory = 0x2E
 };
 
 typedef struct
@@ -55,7 +55,7 @@ typedef struct
     unsigned short number_of_heads;
     unsigned long hidden_sectors;
     unsigned long total_sectors_long;
-    
+
     unsigned char drive_number;
     unsigned char current_head;
     unsigned char boot_signature;
@@ -68,27 +68,27 @@ typedef struct
 
 class FAT16Analyzer
 {
-	FILE *fs;
+    FILE *fs;
 
-	unsigned short *fat1;
-	unsigned short *fat2;
+    unsigned short *fat1;
+    unsigned short *fat2;
 
-	vector<Fat16Entry> entries;
+    vector<Fat16Entry> entries;
 
-	int loadEntries();
-	int loadFats(int fat1Start, int fat2Start);
+    int loadEntries();
+    int loadFats(int fat1Start, int fat2Start);
 
 public:
 
-	FAT16Analyzer();
-	FAT16Analyzer(char *fname);
-	~FAT16Analyzer();
+    FAT16Analyzer();
+    FAT16Analyzer(char *fname);
+    ~FAT16Analyzer();
 
-	void vf();
-	void bl();
-	void bd();
-	void cf1();
-	void cf2();
+    void vf();
+    void bl();
+    void bd();
+    void cf1();
+    void cf2();
 };
 
 #endif

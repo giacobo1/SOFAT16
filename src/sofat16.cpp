@@ -8,7 +8,7 @@ FAT16Analyzer::FAT16Analyzer()
 
 FAT16Analyzer::FAT16Analyzer(char *fname)
 {
-	this->fs = fopen(fname, "rb");
+	this->fs = fopen(fname, "rb+");
 
 	if (fs == NULL)
 	{
@@ -29,7 +29,7 @@ FAT16Analyzer::~FAT16Analyzer()
 
 int FAT16Analyzer::loadEntries()
 {
-	int i, bsStart, fat1Start, fat2Start;
+	int i, bsStart;
 	Fat16BootSector bs;
 	Fat16Entry entry;
 
@@ -73,33 +73,21 @@ int FAT16Analyzer::loadEntries()
 	fat1Start = bsStart + 0x800;
 	fat2Start = fat1Start + bs.fat_size_sectors * bs.sector_size;
 
-	loadFats(fat1Start, fat2Start);
+	loadFats();
 
 	return 0;
 }
 
-int FAT16Analyzer::loadFats(int fat1Start, int fat2Start)
+int FAT16Analyzer::loadFats()
 {
-	if (fs == NULL)
-	{
-		printf("Disc not found!\n");
-		return -1;
-	}
-
-	if (fat1 == NULL) fat1 = new unsigned short[65536];
-	if (fat2 == NULL) fat2 = new unsigned short[65536];
+	if (fat1 == NULL) fat1 = new unsigned short[fat2Start - fat1Start];
+	if (fat2 == NULL) fat2 = new unsigned short[fat2Start - fat1Start];
 
 	fseek(fs, fat1Start, SEEK_SET);
-	fread(fat1, sizeof(unsigned short), 65536, fs);
-
-	unsigned short test;
-
-	test = fat1[0];
-	test = fat1[1];
-	test = fat1[2];
+	fread(fat1, sizeof(unsigned short), fat2Start - fat1Start, fs);
 
 	fseek(fs, fat2Start, SEEK_SET);
-	fread(fat2, sizeof(unsigned short), 65536, fs);
+	fread(fat2, sizeof(unsigned short), fat2Start - fat1Start, fs);
 
 	return 0;
 }
@@ -121,10 +109,12 @@ void FAT16Analyzer::bd()
 
 void FAT16Analyzer::cf1()
 {
-
+	fseek(fs, fat1Start, SEEK_SET);
+	fwrite(fat2, sizeof(unsigned short), sizeof(fat2), fs);
 }
 
 void FAT16Analyzer::cf2()
 {
-
+	fseek(fs, fat2Start, SEEK_SET);
+	fwrite(fat1, sizeof(unsigned short), sizeof(fat1), fs);
 }

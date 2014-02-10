@@ -30,7 +30,6 @@ FAT16Analyzer::~FAT16Analyzer()
 int FAT16Analyzer::loadEntries()
 {
 	int i, bsStart;
-	Fat16BootSector bs;
 	Fat16Entry entry;
 
 	bsStart = 0;
@@ -62,6 +61,8 @@ int FAT16Analyzer::loadEntries()
 
 	fseek(fs, (bs.reserved_sectors - 1 + bs.fat_size_sectors * bs.number_of_fats) * bs.sector_size, SEEK_CUR);
 
+	dataStart = (int)sizeof(Fat16Entry) * 512 + 0x800 + ftell(fs);
+
 	entries.clear();
 
 	for (i = 0; i < bs.root_dir_entries; i++)
@@ -80,41 +81,95 @@ int FAT16Analyzer::loadEntries()
 
 int FAT16Analyzer::loadFats()
 {
-	if (fat1 == NULL) fat1 = new unsigned short[fat2Start - fat1Start];
-	if (fat2 == NULL) fat2 = new unsigned short[fat2Start - fat1Start];
+	fatSize = (fat2Start - fat1Start) / 2;
+
+	if (fat1 == NULL) fat1 = new unsigned short[fatSize];
+	if (fat2 == NULL) fat2 = new unsigned short[fatSize];
 
 	fseek(fs, fat1Start, SEEK_SET);
-	fread(fat1, sizeof(unsigned short), fat2Start - fat1Start, fs);
+	fread(fat1, sizeof(unsigned short), fatSize, fs);
 
 	fseek(fs, fat2Start, SEEK_SET);
-	fread(fat2, sizeof(unsigned short), fat2Start - fat1Start, fs);
+	fread(fat2, sizeof(unsigned short), fatSize, fs);
 
 	return 0;
 }
 
 void FAT16Analyzer::vf()
 {
-
+	for (int i = 0; i < fatSize; i++)
+	{
+		if (fat1[i] != fat2[i])
+		{
+			printf("DIF %d:%d,%d\n", i, fat1[i], fat2[i]);
+		}
+	}
 }
 
 void FAT16Analyzer::bl()
 {
+	bool *freeBlocks = new bool[fatSize];
+	bool firstComma = true;
 
+	for (int i = 2; i < fatSize; i++)
+	{
+		freeBlocks[i] = true;
+	}
+
+	for (int i = 2; i < fatSize; i++)
+	{
+		if (fat1[i] == 0xffff) continue;
+		
+		freeBlocks[fat1[i]] = false;
+	}
+
+	for (int i = 0; i < (int)entries.size(); i++)
+	{
+		freeBlocks[entries[i].starting_cluster] = false;
+	}
+
+	printf("LIVRE ");
+
+	for (int i = 2; i < fatSize; i++)
+	{
+		if (freeBlocks[i])
+		{
+			if (!firstComma)
+			{
+				printf(",");
+			}
+			else firstComma = false;
+
+			printf("%d", i);
+		}
+	}
+
+	printf("\n");
+
+	delete [] freeBlocks;
 }
 
 void FAT16Analyzer::bd()
 {
-
+	
 }
 
 void FAT16Analyzer::cf1()
 {
 	fseek(fs, fat1Start, SEEK_SET);
-	fwrite(fat2, sizeof(unsigned short), sizeof(fat2), fs);
+
+	for (int i = 0; i < fatSize; i++)
+	{
+		fwrite(&fat2[i], sizeof(unsigned short), 1, fs);
+	}
 }
 
 void FAT16Analyzer::cf2()
 {
 	fseek(fs, fat2Start, SEEK_SET);
-	fwrite(fat1, sizeof(unsigned short), sizeof(fat1), fs);
+
+	for (int i = 0; i < fatSize; i++)
+	{
+		fwrite(&fat1[i], sizeof(unsigned short), 1, fs);
+	}
 }

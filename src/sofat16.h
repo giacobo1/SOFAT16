@@ -74,9 +74,12 @@ class FAT16Analyzer
     unsigned short *fat2;
 
     int fat1Start;
-	int fat2Start;
+    int fat2Start;
+    int fatSize;
+    int dataStart;
 
     vector<Fat16Entry> entries;
+    Fat16BootSector bs;
 
     int loadEntries();
     int loadFats();

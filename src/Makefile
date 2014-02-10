@@ -13,6 +13,9 @@ clear_obj:
 clear_exe:
 	rm testeme
 
+build_tester:
+	g++ sofat16_tester.cpp -o sf16_tester
+
 build_filesystem:
 	dd if=/dev/zero of=disco bs=512 count=65536
 

@@ -1,0 +1,14 @@
+		Universidade Federal de Pelotas - UFPel
+		Bacharelado em Ciência da Computação
+		Sistemas Operacionais
+
+		Bruno G. Pinto - 11107588 - bgpinto@inf.ufpel.edu.br
+		Vinícius R. Santos - 11105054 - vrdsantos@inf.ufpel.edu.br
+
+
+	Link para o repositório no Github: https://github.com/giacobo1/SOFAT16	
+
+
+		Trabalho 2 - Relatório de Testes
+
+

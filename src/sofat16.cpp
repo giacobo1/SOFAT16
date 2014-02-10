@@ -151,7 +151,73 @@ void FAT16Analyzer::bl()
 
 void FAT16Analyzer::bd()
 {
-	
+	bool *removedBlocks;
+	bool firstComma = true;
+	int clusterSize = bs.sector_size * bs.sectors_per_cluster;
+	int pos;
+	unsigned char byte;
+	int fileSize, dataSize;
+	unsigned char *data;
+
+	fseek(fs, 0, SEEK_END);
+	fileSize = ftell(fs);
+
+	dataSize = fileSize - dataStart;
+
+	removedBlocks = new bool[dataSize];
+	data = new unsigned char[dataSize];
+
+	fseek(fs, dataStart, SEEK_SET);
+	fread(data, sizeof(unsigned char), dataSize, fs);
+
+	for (int i = 0; i + 2 < fatSize; i++)
+	{
+		if (fat1[i + 2] != 0x0)
+		{
+			removedBlocks[i] = false;
+			continue;
+		}
+
+		pos = i * clusterSize;
+
+		for (int j = 0; j < clusterSize; j++)
+		{
+			if (pos + j > dataSize)
+			{
+				removedBlocks[i] = false;
+				break;
+			}
+
+			if (data[pos + j] != 0)
+			{
+				break;
+			}
+			else if (j == clusterSize - 1)
+			{
+				removedBlocks[i] = false;
+			}
+		}
+	}
+
+	printf("REMOVIDOS ");
+
+	for (int i = 0; i < dataSize / 2048; i++)
+	{
+		if (removedBlocks[i])
+		{
+			if (!firstComma)
+			{
+				printf(",");
+			}
+			else firstComma = false;
+
+			printf("%d", i);
+		}
+	}
+
+	printf("\n");
+
+	delete[] removedBlocks;
 }
 
 void FAT16Analyzer::cf1()

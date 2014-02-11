@@ -9,19 +9,7 @@ int main(int argc, char const *argv[])
 
 	if(argc == 2)
 	{
-		if ("-bd" == std::string(argv[1]))
-		{
-			FILE *fs;
-
-			if((fs = fopen("mp_sofat16/removed.txt","w+")) == NULL)exit(1);
-			for(int i = 0; i < 4*2048; i++)fprintf(fs, "%c",'A');
-			fclose(fs);
-
-			if((fs = fopen("mp_sofat16/removed.txt","w+")) == NULL)exit(1);
-			for(int i = 0; i < 3*2048; i++)fprintf(fs, "%c",'A');
-			fclose(fs);
-		}
-		else if ("-cf1" == std::string(argv[1]))
+		if ("-cf1" == std::string(argv[1]))
 		{
 			
 			srand(time(NULL));

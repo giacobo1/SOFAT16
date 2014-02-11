@@ -12,3 +12,40 @@
 		Trabalho 2 - Relatório de Testes
 
 
+Instruções para gerar o executável testeme:
+
+1 # Execute o seguinte comando dentro do diretório src:
+	
+	make
+
+2 # Para limpar arquivos objeto:
+	make clear_obj
+
+3 # Para limpar o executável:
+	make clear_exe
+
+
+
+Para gerar o programa de testes automáticos sf16_tester, execute o seguinte comando dentro do diretório src:
+	
+	make build_tester
+
+Instruções para Testar:
+
+Dentro da pasta src, execute a sequência de comandos: 
+
+	make build_filesystem
+	make format_filesystem
+	make mount_filesystem
+
+Após executar estas instruções, um novo sistema de arquivos será criado e estará apto para testes.
+Crie um arquivo dentro da partição disco, caso deseje, adicione conteúdo e salve o arquivo.
+
+
+Para desmontar o sistema digite:
+	make umount_filesystem
+
+
+Para efetuar os testes foi criado um programa chamado sf16_tester. Tal programa pode ser gerado via Makefile pelo comando: make build_tester. Este programa corrompe a FAT e sua cópia passando-se por linha de comando os mesmos parâmetros para reconstruir as FATs (-cf1 corrompe a FAT e -cf2 corrompe a cópia da fat) no programa testeme. Para corromper as FATs o programa de testes aponta para a posição inicial das FATs e adiciona dados aleatórios em 10 entradas da FAT em questão de forma direta. Isto possibilita testar o comando ./testeme -vf, pois as FATs estarão inconsistentes, bem como testar a correção das mesmas via comandos ./testeme -cf1 e ./testeme -cf2. 
+
+Para testar os blocos livres, basta usar a opção de linha de comando ./testeme -bl. Para testar os blocos deletados, basta montar a partição criar um arquivo e deleta-lo se esta não está montada, ou deletar algum arquivo existente e rodar a opção ./testeme -bd.

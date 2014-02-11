@@ -12,6 +12,8 @@ clear_obj:
 
 clear_exe:
 	rm testeme
+clear_tester:
+	rm sf16_tester
 
 build_tester:
 	g++ sofat16_tester.cpp -o sf16_tester
